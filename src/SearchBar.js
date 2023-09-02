@@ -9,7 +9,7 @@ import {
   Tabs,
   Tab,
   Box,
-  Alert
+  Alert,
 } from "@mui/material";
 import { theme } from "./App";
 import PropTypes from "prop-types";
@@ -39,7 +39,7 @@ CustomTabPanel.propTypes = {
 const SearchBar = (props) => {
   const [query, updateQuery] = useState("");
   const [tab, setTabValue] = useState(0);
-  const [dataset, setDataset] = useState(props.foundData);
+  const [dataset, setDataset] = useState(props.all);
   const [count, setCount] = useState(props.all.length);
 
   const fuse = new Fuse(dataset, {
@@ -61,45 +61,55 @@ const SearchBar = (props) => {
   };
 
   const handleTabChange = (event, newValue) => {
-    
     setTabValue(newValue);
     updateQuery("");
     setCount(props.foundData.length);
     if (newValue === 1) {
-      setDataset(props.notLocatedData);
+      setDataset(props.foundData);
     } else if (newValue === 2) {
-      setDataset(props.all);
+      setDataset(props.notLocatedData);
     } else if (newValue === 3) {
       setDataset(props.deceasedData);
     } else {
-      setDataset(props.foundData);
+      setDataset(props.all);
     }
-    
   };
 
   return (
-    <Grid container spacing={2} >
+    <Grid container spacing={2}>
       <Grid item xs={12} s={12} md={12} lg={12}>
         <Tabs
           value={tab}
           onChange={handleTabChange}
           variant="fullWidth"
-          
           sx={{
             height: "1rem",
             width: "100%",
             borderBottom: 1,
             borderColor: "divider",
-            marginTop: 2
+            marginTop: 2,
           }}
         >
-          <Tab label="Found" />
-          <Tab label="Not Located" wrapped/>
           <Tab label="All" />
-          <Tab label="Lost Lives" wrapped/>
+          <Tab label="Found" />
+          <Tab label="Not Located" wrapped />
+          <Tab label="Lost Lives" wrapped />
         </Tabs>
         <CustomTabPanel value={tab} index={0}>
-          <Typography>Search for found</Typography>
+          <Alert
+            severity="warning"
+            sx={{
+              fontSize: 12,
+              marginBottom: 2,
+              display: "flex",
+              justifyContent: "center",
+            }}
+            className="text-left"
+          >
+            NOTE: This list contains a combination of <strong>only</strong> the
+            found and not located list.
+          </Alert>
+          <Typography>Search all</Typography>
           <form className="search w-full">
             <TextField
               id="input-search"
@@ -120,7 +130,7 @@ const SearchBar = (props) => {
           </form>
         </CustomTabPanel>
         <CustomTabPanel value={tab} index={1}>
-          <Typography>Search for not located</Typography>
+          <Typography>Search for found</Typography>
           <form className="search w-full">
             <TextField
               id="input-search"
@@ -141,15 +151,7 @@ const SearchBar = (props) => {
           </form>
         </CustomTabPanel>
         <CustomTabPanel value={tab} index={2}>
-          <Alert
-            severity="warning"
-            sx={{ fontSize: 12, marginBottom: 2, display: "flex", justifyContent: "center"}}
-            className="text-left"
-          >
-            NOTE: This list contains a combination of <strong>only</strong> the
-            found and not located list.
-          </Alert>
-          <Typography>Search all</Typography>
+          <Typography>Search for not located</Typography>
           <form className="search w-full">
             <TextField
               id="input-search"
@@ -272,35 +274,35 @@ const SearchBar = (props) => {
                   color: theme.palette.primary.contrastText,
                 }}
               >
-                  <Typography className="text-left p-1">
-                    <strong>Name:</strong> {Name}
-                  </Typography>
-                  <Typography className="text-left p-1">
-                    <strong>Status:</strong> {Status}
-                  </Typography>
-                  {tab === 3 ? (
-                    <Typography
-                      style={{ wordWrap: "break-word" }}
-                      className="text-left p-1"
+                <Typography className="text-left p-1">
+                  <strong>Name:</strong> {Name}
+                </Typography>
+                <Typography className="text-left p-1">
+                  <strong>Status:</strong> {Status}
+                </Typography>
+                {tab === 3 ? (
+                  <Typography
+                    style={{ wordWrap: "break-word" }}
+                    className="text-left p-1"
+                  >
+                    <strong>Sources:</strong>{" "}
+                    <a
+                      className="hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={Notes}
                     >
-                      <strong>Sources:</strong>{" "}
-                      <a
-                        className="hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        href={Notes}
-                      >
-                        {Notes}
-                      </a>
-                    </Typography>
-                  ) : (
-                    <Typography
-                      style={{ wordWrap: "break-word" }}
-                      className="text-left p-1"
-                    >
-                      <strong>Notes:</strong> {Notes}
-                    </Typography>
-                  )}
+                      {Notes}
+                    </a>
+                  </Typography>
+                ) : (
+                  <Typography
+                    style={{ wordWrap: "break-word" }}
+                    className="text-left p-1"
+                  >
+                    <strong>Notes:</strong> {Notes}
+                  </Typography>
+                )}
               </CardContent>
             </Card>
           </Grid>
