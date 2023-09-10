@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Fuse from "fuse.js";
 import {
   Card,
@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { theme } from "./App";
 import PropTypes from "prop-types";
+import axios from "axios";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -41,6 +42,27 @@ const SearchBar = (props) => {
   const [tab, setTabValue] = useState(0);
   const [dataset, setDataset] = useState(props.all);
   const [count, setCount] = useState(props.all.length);
+  const [updatedTime, setUpdatedTime] = useState([]);
+  let hst;
+
+  const convertUTCToLocal = (date) => {
+    const newDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60 * 1000
+    );
+    return newDate.toLocaleString();
+  };
+
+  useEffect(() => {
+    axios
+      .get("./metadata.json")
+      .then((res) => setUpdatedTime(res.data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  if (updatedTime.timestamp_utc !== undefined) {
+    const localTime = convertUTCToLocal(new Date(updatedTime.timestamp_utc));
+    hst = localTime.toString();
+  }
 
   const fuse = new Fuse(dataset, {
     keys: ["Name", "Last Name"],
@@ -78,6 +100,7 @@ const SearchBar = (props) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} s={12} md={12} lg={12}>
+        <p>Last update: {hst !== undefined && hst} HST </p>
         <Tabs
           value={tab}
           onChange={handleTabChange}
@@ -204,7 +227,12 @@ const SearchBar = (props) => {
           </Alert>
           <Alert
             severity="warning"
-            sx={{ fontSize: 12, marginBottom: 2 }}
+            sx={{
+              fontSize: 12,
+              marginBottom: 2,
+              display: "flex",
+              justifyContent: "center",
+            }}
             className="text-left"
           >
             Click on the links below at your own risk

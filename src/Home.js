@@ -2,7 +2,7 @@ import React from 'react';
   
 function Home (){
     return (
-        <div>Last update: HST</div>
+        <div></div>
     )
 }
   
